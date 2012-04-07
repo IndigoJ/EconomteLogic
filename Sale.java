@@ -71,6 +71,47 @@ public class Sale implements Parcelable, Serializable {
 		return description;
 	}
 
+        //Метод вычисления времени до начала акции,если она ещё не началась
+	//и до конца,если уже началась
+	//Если акция ещё не началась,возвращает орицательное значение
+	//Если началась - положительное
+	public static long days(String begin_date,String end_date)
+	{
+		try
+		{
+		//Получение текущей даты
+			Date current = Calendar.getInstance().getTime();
+			Date begin;
+		
+			if(((begin = DateFormat.getDateInstance().parse(convert_sql_date(begin_date))).after(current)))
+			{
+				//Вычисление разницы между датами, если акция ещё не началсь
+				//Разница получается в миллисекундах,поэтому полученное значение делится на количество  миллисекунд в дне
+				//А именно 86400000
+				return ((current.getTime() - begin.getTime())/86400000) - 1;
+			}
+			else
+			{
+			//Вычисление разницы, если акция уже началась
+				Date end = DateFormat.getDateInstance().parse(convert_sql_date(end_date));
+				return ((end.getTime()-current.getTime())/86400000) + 1;
+			}
+		}
+		catch(ParseException exc)
+		{
+			return 0;
+		}
+	}
+	
+	//Метод, который конвертирует дату из формата sql-даты в формат,который понимает java
+	public static String convert_sql_date(String sql_date)
+	{
+		//yyyy-mm-dd - sql формат
+		//dd.mm.yyyy - java формат
+		String[] parts = sql_date.split("-");
+		return parts[2]+"."+parts[1]+"."+parts[0];
+	}
+
 	public String toString() {
 		return company_name + " " + type + " " + city + " " + sale_name + " " + start_date + " " + end_date + " " + description + "\n";
 	}
