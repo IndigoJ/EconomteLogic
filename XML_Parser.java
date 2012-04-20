@@ -17,6 +17,10 @@ public class XML_Parser {
 
 	private static ArrayList<Advertiser> list_of_advertisers = new ArrayList<Advertiser>();
 
+        private static ArrayList<String> list_of_cities_advertisers = new ArrayList<String>();
+
+        private static ArrayList<String> list_of_addresses = new ArrayList<String>();
+
 	private static Sale sale_buffer = null;
 
 	private static Category category_buffer = null;
@@ -221,6 +225,77 @@ public class XML_Parser {
 			visitAdvertisers(list_of_nodes.item(i), _lvl + 1);
 		}
 	}
+
+public static ArrayList<String> getAdvCities(String s) throws SAXException,
+	IOException, ParserConfigurationException
+	{
+		list_of_cities_advertisers.clear();
+
+		Document xml_doc = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder().parse(s);
+
+		visitAdvCities(xml_doc, 0);
+
+		return list_of_cities_advertisers;
+	}
+	
+	private static void visitAdvCities(Node _node, int _lvl)
+	{
+		NodeList list_of_nodes = _node.getChildNodes();
+		String parrent;
+		String value;
+
+		for (int i = 0; i < list_of_nodes.getLength(); i++) {
+
+			if (list_of_nodes.item(i).getNodeType() == Node.TEXT_NODE) {
+
+				parrent = list_of_nodes.item(i).getParentNode().getNodeName();
+				value = list_of_nodes.item(i).getNodeValue();
+
+				if (parrent.equals("city") && !list_of_cities_advertisers.contains(value)) {
+					list_of_cities_advertisers.add(value);
+				}
+
+			}
+			visitAdvCities(list_of_nodes.item(i), _lvl + 1);
+		}
+	}
+	
+	public static ArrayList<String> getAddresses(String s) throws SAXException,
+	IOException, ParserConfigurationException
+	{
+		list_of_addresses.clear();
+
+		Document xml_doc = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder().parse(s);
+
+		visitAddresses(xml_doc, 0);
+
+		return list_of_addresses;
+	}
+	
+	private static void visitAddresses(Node _node, int _lvl)
+	{
+		NodeList list_of_nodes = _node.getChildNodes();
+		String parrent;
+		String value;
+
+		for (int i = 0; i < list_of_nodes.getLength(); i++) {
+
+			if (list_of_nodes.item(i).getNodeType() == Node.TEXT_NODE) {
+
+				parrent = list_of_nodes.item(i).getParentNode().getNodeName();
+				value = list_of_nodes.item(i).getNodeValue();
+
+				if (parrent.equals("address") && !list_of_addresses.contains(value)) {
+					list_of_addresses.add(value);
+				}
+
+			}
+			visitAddresses(list_of_nodes.item(i), _lvl + 1);
+		}
+	}
+	
 
 	public static String translit(String s) {
 		s = s.replaceAll("А", "A");
